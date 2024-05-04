@@ -2,6 +2,7 @@ package br.com.fiap.ordermanagement.controllers;
 
 import br.com.fiap.ordermanagement.models.dtos.requests.CreateOrderRequestDto;
 import br.com.fiap.ordermanagement.models.dtos.responses.CreateOrderResponseDto;
+import br.com.fiap.ordermanagement.models.dtos.responses.GetOrderReponseDto;
 import br.com.fiap.ordermanagement.models.dtos.responses.GetOrdersResponseDto;
 import br.com.fiap.ordermanagement.services.OrderService;
 import br.com.fiap.ordermanagement.services.impl.OrderServiceImpl;
@@ -28,6 +29,18 @@ public class OrderManagementController {
     public ResponseEntity<GetOrdersResponseDto> getOrders() {
         var orders = orderService.getOrders();
         return new ResponseEntity(orders, HttpStatus.OK);
+    }
+
+    /**
+     * Get order by client id
+     *
+     * @param clientId
+     * @return
+     */
+    @GetMapping("/{clientId}")
+    public ResponseEntity<GetOrderReponseDto> getOrderByClientId(@PathVariable String clientId) {
+        var order = orderService.getOrderByClientId(clientId);
+        return new ResponseEntity(order, HttpStatus.OK);
     }
 
     /**

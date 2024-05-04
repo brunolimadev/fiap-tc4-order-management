@@ -4,6 +4,7 @@ import br.com.fiap.ordermanagement.enumerators.StatusEnum;
 import br.com.fiap.ordermanagement.models.OrderHistory;
 import br.com.fiap.ordermanagement.models.dtos.requests.CreateOrderRequestDto;
 import br.com.fiap.ordermanagement.models.dtos.responses.CreateOrderResponseDto;
+import br.com.fiap.ordermanagement.models.dtos.responses.GetOrderReponseDto;
 import br.com.fiap.ordermanagement.models.dtos.responses.GetOrdersResponseDto;
 import br.com.fiap.ordermanagement.repositories.OrderHistoryRepository;
 import br.com.fiap.ordermanagement.repositories.OrderRepository;
@@ -62,4 +63,17 @@ public class OrderServiceImpl implements OrderService {
 
         return GetOrdersResponseDto.fromEntity(orders);
     }
+
+    /**
+     * Get order by client id
+     *
+     * @param clientId Client id
+     * @return Order by client id
+     */
+    @Override
+    public GetOrderReponseDto getOrderByClientId(String clientId) {
+        var order = orderRepository.findByClientId(clientId).orElseThrow(() -> new IllegalArgumentException("Order not found" ));
+        return GetOrderReponseDto.fromEntity(order);
+    }
+
 }

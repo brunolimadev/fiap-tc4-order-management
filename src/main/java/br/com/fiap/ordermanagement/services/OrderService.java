@@ -2,6 +2,7 @@ package br.com.fiap.ordermanagement.services;
 
 import br.com.fiap.ordermanagement.models.dtos.requests.CreateOrderRequestDto;
 import br.com.fiap.ordermanagement.models.dtos.responses.CreateOrderResponseDto;
+import br.com.fiap.ordermanagement.models.dtos.responses.GetOrderReponseDto;
 import br.com.fiap.ordermanagement.models.dtos.responses.GetOrdersResponseDto;
 
 public interface OrderService {
@@ -18,6 +19,13 @@ public interface OrderService {
      * @return
      */
     public GetOrdersResponseDto getOrders();
+
+    /**
+     * Get order by client id
+     * @param clientId
+     * @return
+     */
+    public GetOrderReponseDto getOrderByClientId(String clientId);
 
 
 }
