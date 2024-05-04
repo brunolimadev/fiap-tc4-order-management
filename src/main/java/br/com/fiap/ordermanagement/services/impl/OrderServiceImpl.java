@@ -71,8 +71,8 @@ public class OrderServiceImpl implements OrderService {
      * @return Order by client id
      */
     @Override
-    public GetOrderReponseDto getOrderByClientId(String clientId) {
-        var order = orderRepository.findByClientId(clientId).orElseThrow(() -> new IllegalArgumentException("Order not found" ));
+    public GetOrderReponseDto getOrderByOrderId(String clientId) {
+        var order = orderRepository.findOrderById(clientId).orElseThrow(() -> new IllegalArgumentException("Order not found" ));
         return GetOrderReponseDto.fromEntity(order);
     }
 

@@ -32,14 +32,14 @@ public class OrderManagementController {
     }
 
     /**
-     * Get order by client id
+     * Get order by order id
      *
-     * @param clientId
+     * @param orderId
      * @return
      */
-    @GetMapping("/{clientId}")
-    public ResponseEntity<GetOrderReponseDto> getOrderByClientId(@PathVariable String clientId) {
-        var order = orderService.getOrderByClientId(clientId);
+    @GetMapping("/{orderId}")
+    public ResponseEntity<GetOrderReponseDto> getOrderByClientId(@PathVariable String orderId) {
+        var order = orderService.getOrderByOrderId(orderId);
         return new ResponseEntity(order, HttpStatus.OK);
     }
 

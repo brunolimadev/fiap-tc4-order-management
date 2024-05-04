@@ -25,7 +25,7 @@ public interface OrderService {
      * @param clientId
      * @return
      */
-    public GetOrderReponseDto getOrderByClientId(String clientId);
+    public GetOrderReponseDto getOrderByOrderId(String clientId);
 
 
 }
