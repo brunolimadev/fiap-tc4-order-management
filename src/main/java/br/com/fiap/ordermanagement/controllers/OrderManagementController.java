@@ -2,14 +2,12 @@ package br.com.fiap.ordermanagement.controllers;
 
 import br.com.fiap.ordermanagement.models.dtos.requests.CreateOrderRequestDto;
 import br.com.fiap.ordermanagement.models.dtos.responses.CreateOrderResponseDto;
+import br.com.fiap.ordermanagement.models.dtos.responses.GetOrdersResponseDto;
 import br.com.fiap.ordermanagement.services.OrderService;
 import br.com.fiap.ordermanagement.services.impl.OrderServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/orders")
@@ -19,6 +17,17 @@ public class OrderManagementController {
 
     public OrderManagementController(OrderServiceImpl orderService) {
         this.orderService = orderService;
+    }
+
+    /**
+     * Get all orders
+     *
+     * @return
+     */
+    @GetMapping
+    public ResponseEntity<GetOrdersResponseDto> getOrders() {
+        var orders = orderService.getOrders();
+        return new ResponseEntity(orders, HttpStatus.OK);
     }
 
     /**

@@ -4,10 +4,14 @@ import br.com.fiap.ordermanagement.enumerators.StatusEnum;
 import br.com.fiap.ordermanagement.models.OrderHistory;
 import br.com.fiap.ordermanagement.models.dtos.requests.CreateOrderRequestDto;
 import br.com.fiap.ordermanagement.models.dtos.responses.CreateOrderResponseDto;
+import br.com.fiap.ordermanagement.models.dtos.responses.GetOrdersResponseDto;
 import br.com.fiap.ordermanagement.repositories.OrderHistoryRepository;
 import br.com.fiap.ordermanagement.repositories.OrderRepository;
 import br.com.fiap.ordermanagement.services.OrderService;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -31,19 +35,31 @@ public class OrderServiceImpl implements OrderService {
 
         var orderEntity = orderRepository.save(order.toEntity());
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+
         var orderHistory = OrderHistory.builder()
                 .orderId(orderEntity.getId())
                 .status(StatusEnum.PROCESSING)
                 .description("Order created")
+                .createdAt(LocalDateTime.now().format(formatter).toString())
                 .build();
 
         orderHistoryRepository.save(orderHistory);
 
-        return CreateOrderResponseDto.builder()
-                .orderId(orderEntity.getId())
-                .message("Order created successfully")
-                .url("/orders/" + orderEntity.getId())
-                .build();
+        return CreateOrderResponseDto.fromEntity(orderEntity, "Order created successfully");
     }
 
+
+    /**
+     * Get all orders
+     *
+     * @return All orders
+     */
+    @Override
+    public GetOrdersResponseDto getOrders() {
+
+        var orders = orderRepository.findAll();
+
+        return GetOrdersResponseDto.fromEntity(orders);
+    }
 }

@@ -8,6 +8,7 @@ import lombok.Data;
 public class OrderItem {
 
     private String productId;
+    private String name;
     private Integer quantity;
     private Double price;
     private String category;

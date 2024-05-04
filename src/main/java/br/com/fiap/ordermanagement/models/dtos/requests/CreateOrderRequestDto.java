@@ -25,6 +25,7 @@ public class CreateOrderRequestDto {
                     .quantity(item.getQuantity())
                     .category(item.getCategory())
                     .price(item.getPrice())
+                    .name(item.getProductName())
                     .build();
             order.getItems().add(orderItem);
             amount += item.getPrice() * item.getQuantity();
