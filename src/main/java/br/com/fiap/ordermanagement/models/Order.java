@@ -1,5 +1,8 @@
 package br.com.fiap.ordermanagement.models;
 
+import br.com.fiap.ordermanagement.enumerators.StatusEnum;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -19,7 +22,14 @@ public class Order {
 
     private String clientId;
 
+    @Enumerated(EnumType.STRING)
+    private StatusEnum currentStatus;
+
     private List<OrderItem> items;
+
+    private String createdAt;
+
+    private String updatedAt;
 
 
 }

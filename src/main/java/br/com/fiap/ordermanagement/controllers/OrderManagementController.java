@@ -1,5 +1,6 @@
 package br.com.fiap.ordermanagement.controllers;
 
+import br.com.fiap.ordermanagement.models.dtos.requests.ChangeStatusRequestDto;
 import br.com.fiap.ordermanagement.models.dtos.requests.CreateOrderRequestDto;
 import br.com.fiap.ordermanagement.models.dtos.responses.CreateOrderResponseDto;
 import br.com.fiap.ordermanagement.models.dtos.responses.GetOrderReponseDto;
@@ -53,6 +54,19 @@ public class OrderManagementController {
     public ResponseEntity<CreateOrderResponseDto> createOrder(@RequestBody CreateOrderRequestDto body) {
         var order = orderService.createOrder(body);
         return new ResponseEntity(order, HttpStatus.CREATED);
+    }
+
+    /**
+     * Change order status
+     *
+     * @param orderId
+     * @param status
+     * @return
+     */
+    @PutMapping("/{orderId}/status")
+    public ResponseEntity<CreateOrderResponseDto> changeStatus(@PathVariable String orderId, @RequestBody ChangeStatusRequestDto body) {
+        var order = orderService.changeStatus(orderId, body);
+        return new ResponseEntity(order, HttpStatus.OK);
     }
 
 }

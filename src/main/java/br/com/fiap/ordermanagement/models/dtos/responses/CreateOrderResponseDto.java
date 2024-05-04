@@ -9,12 +9,14 @@ import lombok.Data;
 public class CreateOrderResponseDto {
     private String orderId;
     private String message;
+    private String currentStatus;
     private String url;
 
     public static CreateOrderResponseDto fromEntity(Order order, String message) {
         return CreateOrderResponseDto.builder()
                 .orderId(order.getId())
                 .message(message)
+                .currentStatus(order.getCurrentStatus().name())
                 .url("/orders/" + order.getId())
                 .build();
     }

@@ -29,6 +29,9 @@ public class GetOrdersResponseDto {
                     .orderId(order.getId())
                     .amount(order.getAmount())
                     .items(new ArrayList<>())
+                    .currentStatus(order.getCurrentStatus().name())
+                    .createdAt(order.getCreatedAt())
+                    .updatedAt(order.getUpdatedAt())
                     .build();
 
             for (OrderItem item : order.getItems()) {

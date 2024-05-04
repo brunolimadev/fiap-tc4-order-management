@@ -16,6 +16,11 @@ public class OrderDto {
     private String clientId;
     private String orderId;
     private Double amount;
+    private String currentStatus;
     private List<OrderItemDto> items;
+    private String createdAt;
+    private String updatedAt;
+
+
 
 }
