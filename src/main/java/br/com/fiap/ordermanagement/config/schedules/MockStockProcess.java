@@ -29,6 +29,9 @@ public class MockStockProcess {
         this.orderRepository = orderRepository;
     }
 
+    /**
+     * Check status in processing.
+     */
     @Scheduled(fixedRate = 4000, initialDelay = 2000)
     public void checkStatusInProcessing() {
 

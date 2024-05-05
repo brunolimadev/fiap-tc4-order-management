@@ -1,5 +1,6 @@
 package br.com.fiap.ordermanagement.models.dtos;
 
+import br.com.fiap.ordermanagement.models.Order;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
