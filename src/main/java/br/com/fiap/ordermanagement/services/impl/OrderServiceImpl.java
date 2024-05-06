@@ -69,12 +69,12 @@ public class OrderServiceImpl implements OrderService {
     /**
      * Get order by client id
      *
-     * @param clientId Client id
+     * @param orderId Client id
      * @return Order by client id
      */
     @Override
-    public GetOrderReponseDto getOrderByOrderId(String clientId) {
-        var order = orderRepository.findOrderById(clientId).orElseThrow(() -> new IllegalArgumentException("Order not found" ));
+    public GetOrderReponseDto getOrderByOrderId(String orderId) {
+        var order = orderRepository.findOrderById(orderId).orElseThrow(() -> new IllegalArgumentException("Order not found"));
         return GetOrderReponseDto.fromEntity(order);
     }
 
@@ -82,22 +82,31 @@ public class OrderServiceImpl implements OrderService {
      * Change order status
      *
      * @param orderId Order id
-     * @param body  Body with new status
+     * @param body    Body with new status
      * @return Order status changed
      */
     @Override
     public ChangeStatusResponseDto changeStatus(String orderId, ChangeStatusRequestDto body) {
 
-        var order = orderHistoryRepository.findByOrderId(orderId).orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        var formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+
+        var currentOrder = orderHistoryRepository.findByOrderId(orderId).orElseThrow(() -> new IllegalArgumentException("Order not found"));
 
         var orderHistory = OrderHistory.builder()
-                .orderId(order.getId())
-                .status(StatusEnum.valueOf(body.getStatus().toString()))
+                .orderId(currentOrder.getId())
+                .status(StatusEnum.values()[body.getStatus()])
                 .description(body.getDescription())
                 .createdAt(LocalDateTime.now().toString())
                 .build();
 
-       var result = orderHistoryRepository.save(orderHistory);
+        var result = orderHistoryRepository.save(orderHistory);
+
+        var order = orderRepository.findOrderById(orderId).orElseThrow(() -> new IllegalArgumentException("Order not found"));
+
+        order.setCurrentStatus(StatusEnum.values()[body.getStatus()]);
+        order.setUpdatedAt(LocalDateTime.now().format(formatter).toString());
+
+        orderRepository.save(order);
 
         return ChangeStatusResponseDto.fromEntity(result);
     }

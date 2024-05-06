@@ -32,7 +32,7 @@ public interface OrderService {
     /**
      * Change order status
      * @param orderId
-     * @param status
+     * @param request
      * @return
      */
     public ChangeStatusResponseDto changeStatus(String orderId, ChangeStatusRequestDto request);
