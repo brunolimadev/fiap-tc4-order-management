@@ -5,7 +5,7 @@ FROM openjdk:17-jdk-alpine
 WORKDIR /app
 
 # Copiando o arquivo JAR da aplicação para dentro do container
-COPY target/order-management-1.0.0.jar /app/order-management-1.0.0.jar
+COPY target/order-management-1.0.1.jar /app/order-management-1.0.1.jar
 
 # Expondo a porta em que a aplicação Spring Boot estará rodando
 EXPOSE 8082
