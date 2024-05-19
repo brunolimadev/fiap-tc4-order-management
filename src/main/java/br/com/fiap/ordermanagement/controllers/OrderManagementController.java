@@ -2,6 +2,7 @@ package br.com.fiap.ordermanagement.controllers;
 
 import br.com.fiap.ordermanagement.models.dtos.requests.ChangeStatusRequestDto;
 import br.com.fiap.ordermanagement.models.dtos.requests.CreateOrderRequestDto;
+import br.com.fiap.ordermanagement.models.dtos.responses.ChangeStatusResponseDto;
 import br.com.fiap.ordermanagement.models.dtos.responses.CreateOrderResponseDto;
 import br.com.fiap.ordermanagement.models.dtos.responses.GetOrderReponseDto;
 import br.com.fiap.ordermanagement.models.dtos.responses.GetOrdersResponseDto;
@@ -29,7 +30,7 @@ public class OrderManagementController {
     @GetMapping
     public ResponseEntity<GetOrdersResponseDto> getOrders() {
         var orders = orderService.getOrders();
-        return new ResponseEntity(orders, HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK).body(orders);
     }
 
     /**
@@ -41,7 +42,7 @@ public class OrderManagementController {
     @GetMapping("/{orderId}")
     public ResponseEntity<GetOrderReponseDto> getOrderByClientId(@PathVariable String orderId) {
         var order = orderService.getOrderByOrderId(orderId);
-        return new ResponseEntity(order, HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK).body(order);
     }
 
     /**
@@ -53,7 +54,7 @@ public class OrderManagementController {
     @PostMapping
     public ResponseEntity<CreateOrderResponseDto> createOrder(@RequestBody CreateOrderRequestDto body) {
         var order = orderService.createOrder(body);
-        return new ResponseEntity(order, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(order);
     }
 
     /**
@@ -64,9 +65,10 @@ public class OrderManagementController {
      * @return
      */
     @PutMapping("/{orderId}/status")
-    public ResponseEntity<CreateOrderResponseDto> changeStatus(@PathVariable String orderId, @RequestBody ChangeStatusRequestDto body) {
+    public ResponseEntity<ChangeStatusResponseDto> changeStatus(@PathVariable String orderId,
+            @RequestBody ChangeStatusRequestDto body) {
         var order = orderService.changeStatus(orderId, body);
-        return new ResponseEntity(order, HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK).body(order);
     }
 
 }
