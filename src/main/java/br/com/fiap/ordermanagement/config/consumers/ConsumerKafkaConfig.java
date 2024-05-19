@@ -1,21 +1,15 @@
 package br.com.fiap.ordermanagement.config.consumers;
 
 import br.com.fiap.ordermanagement.models.dtos.responses.GetOrderHistoryResponseDto;
-import br.com.fiap.ordermanagement.models.dtos.responses.GetOrderReponseDto;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
-import org.springframework.kafka.support.serializer.JsonSerializer;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,7 +26,7 @@ public class ConsumerKafkaConfig {
      * @return the consumer factory
      */
     @Bean
-    public ConsumerFactory<String, GetOrderHistoryResponseDto> consumerFactory() {
+    public ConsumerFactory<String, String> consumerFactory() {
         Map<String, Object> configProps = new HashMap<>();
 
         // Set the producer configuration properties
@@ -42,7 +36,7 @@ public class ConsumerKafkaConfig {
         configProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 
         // Set the value serializer class
-        configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+        configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 
         // Set the group id
         configProps.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
@@ -51,7 +45,7 @@ public class ConsumerKafkaConfig {
         configProps.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "1");
 
         // Set the deserializer trusted packages
-        configProps.put(JsonDeserializer.TRUSTED_PACKAGES, GetOrderHistoryResponseDto.class.getPackageName());
+        configProps.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
 
         // Return the producer factory
         return new DefaultKafkaConsumerFactory<>(configProps);
@@ -63,14 +57,11 @@ public class ConsumerKafkaConfig {
      * @return the concurrent kafka listener container factory
      */
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, GetOrderHistoryResponseDto>
-    kafkaListenerContainerFactory() {
+    public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory() {
 
-        ConcurrentKafkaListenerContainerFactory<String, GetOrderHistoryResponseDto> factory =
-                new ConcurrentKafkaListenerContainerFactory<>();
+        ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         return factory;
     }
-
 
 }

@@ -4,6 +4,6 @@ import br.com.fiap.ordermanagement.models.dtos.responses.GetOrderHistoryResponse
 
 public interface OrderStatusService {
 
-    public void changeStatus(GetOrderHistoryResponseDto orderHistoryResponseDto);
+    public void changeStatus(String orderHistoryResponseDto);
 
 }

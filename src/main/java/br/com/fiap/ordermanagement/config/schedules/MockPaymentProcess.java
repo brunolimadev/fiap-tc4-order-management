@@ -4,7 +4,6 @@ import br.com.fiap.ordermanagement.enumerators.StatusEnum;
 import br.com.fiap.ordermanagement.models.Order;
 import br.com.fiap.ordermanagement.models.OrderHistory;
 import br.com.fiap.ordermanagement.models.dtos.responses.GetOrderHistoryResponseDto;
-import br.com.fiap.ordermanagement.models.dtos.responses.GetOrderReponseDto;
 import br.com.fiap.ordermanagement.repositories.OrderHistoryRepository;
 import br.com.fiap.ordermanagement.repositories.OrderRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -15,11 +14,12 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import com.google.gson.Gson;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 @Configuration
 @EnableScheduling
@@ -30,12 +30,13 @@ public class MockPaymentProcess {
 
     private final OrderHistoryRepository orderHistoryRepository;
 
-    private final KafkaTemplate<String, GetOrderHistoryResponseDto> kafkaTemplate;
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
-    @Value(value = "${kafka.topic.order-status-change}")
-    private String topic;
+    @Value(value = "${kafka.topic.order-waiting-shipment}")
+    private String topicOrderWaitingShipment;
 
-    public MockPaymentProcess(OrderHistoryRepository orderHistoryRepository, OrderRepository orderRepository, KafkaTemplate<String, GetOrderHistoryResponseDto> kafkaTemplate) {
+    public MockPaymentProcess(OrderHistoryRepository orderHistoryRepository, OrderRepository orderRepository,
+            KafkaTemplate<String, String> kafkaTemplate) {
         this.orderHistoryRepository = orderHistoryRepository;
         this.orderRepository = orderRepository;
         this.kafkaTemplate = kafkaTemplate;
@@ -44,14 +45,15 @@ public class MockPaymentProcess {
     /**
      * Check status waiting payment.
      */
-    @Scheduled(fixedRate = 4000, initialDelay = 2000)
+    @Scheduled(fixedRate = 120000, initialDelay = 4000)
     public void checkStatusWaitingPayment() {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
         List<Order> orders = orderRepository.findOrdersByCurrentStatus(StatusEnum.WAITING_PAYMENT.name());
 
-        if (orders.isEmpty()) return;
+        if (orders.isEmpty())
+            return;
 
         List<OrderHistory> newOrders = new ArrayList<>();
 
@@ -67,7 +69,7 @@ public class MockPaymentProcess {
             order.setUpdatedAt(LocalDateTime.now().format(formatter).toString());
             order.setCurrentStatus(StatusEnum.WAITING_SHIPMENT);
 
-            sendTopic(GetOrderHistoryResponseDto.fromEntity(orderHistory));
+            sendTopic(GetOrderHistoryResponseDto.fromEntity(orderHistory), order.getClientId());
 
             newOrders.add(orderHistory);
         });
@@ -78,9 +80,17 @@ public class MockPaymentProcess {
         log.info("Orders changed to WAITING_SHIPMENT: {}", result.size());
     }
 
-    private void sendTopic(GetOrderHistoryResponseDto order) {
-        var record = new ProducerRecord<>(topic, order.getOrderId(), order);
+    private void sendTopic(GetOrderHistoryResponseDto order, String clientId) {
+        order.setClientId(clientId);
+
+        var objectJson = new Gson().toJson(order);
+
+        var record = new ProducerRecord<String, String>(topicOrderWaitingShipment,
+                order.getOrderId(), objectJson);
+
         kafkaTemplate.send(record);
-//        log.info("Order {} sent to topic {} and partition {}", order.getOrderId(), result.getRecordMetadata().topic(), result.getRecordMetadata().partition());
+
+        // log.info("Order {} sent to topic {} and partition {}", order.getOrderId(),
+        // result.getRecordMetadata().topic(), result.getRecordMetadata().partition());
     }
 }

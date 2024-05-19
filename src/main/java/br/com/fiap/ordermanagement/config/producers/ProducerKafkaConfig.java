@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.util.HashMap;
@@ -24,10 +25,11 @@ public class ProducerKafkaConfig {
 
     /**
      * Producer factory
+     * 
      * @return
      */
     @Bean
-    public ProducerFactory<String, GetOrderHistoryResponseDto> producerFactory() {
+    public ProducerFactory<String, String> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
 
         // Set the producer configuration properties
@@ -37,7 +39,9 @@ public class ProducerKafkaConfig {
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 
         // Set the value serializer class
-        configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        // configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
+        // JsonSerializer.class);
+        configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 
         // Return the producer factory
         return new DefaultKafkaProducerFactory<>(configProps);
@@ -45,12 +49,12 @@ public class ProducerKafkaConfig {
 
     /**
      * Kafka template
+     * 
      * @return
      */
     @Bean
-    public KafkaTemplate<String, GetOrderHistoryResponseDto> kafkaTemplate() {
+    public KafkaTemplate<String, String> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
-
 
 }

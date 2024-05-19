@@ -4,9 +4,8 @@ public enum StatusEnum {
     PROCESSING,
     WAITING_PAYMENT,
     WAITING_SHIPMENT,
-    SHIPPED,
+    SENT,
     DELIVERED,
     CANCELED
-
 
 }

@@ -32,14 +32,15 @@ public class MockStockProcess {
     /**
      * Check status in processing.
      */
-    @Scheduled(fixedRate = 4000, initialDelay = 2000)
+    @Scheduled(fixedRate = 120000, initialDelay = 2000)
     public void checkStatusInProcessing() {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
         List<Order> orders = orderRepository.findOrdersByCurrentStatus(StatusEnum.PROCESSING.name());
 
-        if (orders.isEmpty()) return;
+        if (orders.isEmpty())
+            return;
 
         List<OrderHistory> newOrders = new ArrayList<>();
 
