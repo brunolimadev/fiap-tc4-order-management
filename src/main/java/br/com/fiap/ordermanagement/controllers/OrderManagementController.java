@@ -1,5 +1,6 @@
 package br.com.fiap.ordermanagement.controllers;
 
+import br.com.fiap.ordermanagement.controllers.exceptions.ProductOutOfStockException;
 import br.com.fiap.ordermanagement.models.dtos.requests.ChangeStatusRequestDto;
 import br.com.fiap.ordermanagement.models.dtos.requests.CreateOrderRequestDto;
 import br.com.fiap.ordermanagement.models.dtos.responses.ChangeStatusResponseDto;
@@ -50,9 +51,11 @@ public class OrderManagementController {
      *
      * @param body
      * @return
+     * @throws ProductOutOfStockException
      */
     @PostMapping
-    public ResponseEntity<CreateOrderResponseDto> createOrder(@RequestBody CreateOrderRequestDto body) {
+    public ResponseEntity<CreateOrderResponseDto> createOrder(@RequestBody CreateOrderRequestDto body)
+            throws ProductOutOfStockException {
         var order = orderService.createOrder(body);
         return ResponseEntity.status(HttpStatus.CREATED).body(order);
     }

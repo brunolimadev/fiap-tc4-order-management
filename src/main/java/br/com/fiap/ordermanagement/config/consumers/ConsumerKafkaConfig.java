@@ -1,6 +1,5 @@
 package br.com.fiap.ordermanagement.config.consumers;
 
-import br.com.fiap.ordermanagement.models.dtos.responses.GetOrderHistoryResponseDto;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,5 +1,6 @@
 package br.com.fiap.ordermanagement.services.impl;
 
+import br.com.fiap.ordermanagement.controllers.exceptions.ProductOutOfStockException;
 import br.com.fiap.ordermanagement.enumerators.StatusEnum;
 import br.com.fiap.ordermanagement.models.OrderHistory;
 import br.com.fiap.ordermanagement.models.dtos.OrderItemDto;
@@ -9,6 +10,7 @@ import br.com.fiap.ordermanagement.models.dtos.responses.ChangeStatusResponseDto
 import br.com.fiap.ordermanagement.models.dtos.responses.CreateOrderResponseDto;
 import br.com.fiap.ordermanagement.models.dtos.responses.GetOrderReponseDto;
 import br.com.fiap.ordermanagement.models.dtos.responses.GetOrdersResponseDto;
+import br.com.fiap.ordermanagement.models.error.ProductOutOfStockError;
 import br.com.fiap.ordermanagement.models.product.request.ProductRequest;
 import br.com.fiap.ordermanagement.repositories.OrderHistoryRepository;
 import br.com.fiap.ordermanagement.repositories.OrderRepository;
@@ -19,6 +21,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -28,6 +32,8 @@ public class OrderServiceImpl implements OrderService {
     private final OrderHistoryRepository orderHistoryRepository;
 
     private final ProductStockService productStockService;
+
+    List<ProductOutOfStockError> errorProducts = new ArrayList<>();
 
     public OrderServiceImpl(OrderRepository orderRepository, OrderHistoryRepository orderHistoryRepository,
             ProductStockService productStockService) {
@@ -41,11 +47,18 @@ public class OrderServiceImpl implements OrderService {
      *
      * @param order Order to be created
      * @return Order created
+     * @throws ProductOutOfStockException
      */
-    public CreateOrderResponseDto createOrder(CreateOrderRequestDto order) {
+    public CreateOrderResponseDto createOrder(CreateOrderRequestDto order) throws ProductOutOfStockException {
 
         for (OrderItemDto item : order.getItems()) {
             checkStock(item);
+        }
+
+        if (!errorProducts.isEmpty()) {
+            throw new ProductOutOfStockException("Some products are out of stock",
+                    errorProducts);
+
         }
 
         var orderEntity = orderRepository.save(order.toEntity());
@@ -125,11 +138,16 @@ public class OrderServiceImpl implements OrderService {
         return ChangeStatusResponseDto.fromEntity(result);
     }
 
-    private void checkStock(OrderItemDto item) {
+    /**
+     * @description Check if product is in stock
+     * @param item
+     */
+    private void checkStock(OrderItemDto item) throws ProductOutOfStockException {
         var response = productStockService.checkStock(Integer.parseInt(item.getProductId()));
 
         if (Integer.parseInt(response.getStoreQuantity()) < item.getQuantity()) {
-            throw new IllegalArgumentException("Product out of stock");
+            errorProducts.add(ProductOutOfStockError.builder().productId(item.getProductId())
+                    .productName(response.getDescription()).build());
         }
 
         var currentStock = Integer.parseInt(response.getStoreQuantity()) - item.getQuantity();
@@ -144,6 +162,10 @@ public class OrderServiceImpl implements OrderService {
         updateStock(productRequest);
     }
 
+    /**
+     * @description Update stock
+     * @param item
+     */
     private void updateStock(ProductRequest item) {
         productStockService.updateStock(item);
     }
